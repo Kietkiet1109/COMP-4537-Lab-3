@@ -27,12 +27,6 @@ class Server {
             res.end(`${message.getDateError}`);
         }
     }
-
-    start() {
-        this.server.listen(this.port, () => {
-            console.log(`Server is running on port ${this.port}`);
-        });
-    }
 }
 
 // ChatGPT use as a reference for idea of Writer class
@@ -75,12 +69,6 @@ class Writer {
                 res.writeHead(200, { 'Content-Type': 'text/plain' });
                 res.end(`${message.appended}${text}`);
             }
-        });
-    }
-
-    start() {
-        this.server.listen(this.port, () => {
-            console.log(`Server is running on port ${this.port}`);
         });
     }
 }
@@ -132,17 +120,24 @@ class Reader {
             }
         });
     }
-
-    start() {
-        this.server.listen(this.port, () => {
-            console.log(`Server is running on port ${this.port}`);
-        });
-    }
 }
 
-const server = new Server(8000);
-const writer = new Writer(8000);
-const reader = new Reader(8000);
-server.start();
-writer.start();
-reader.start();
+// ChatGPT use as a reference for running 3 class with 3 parsed URL
+const server = http.createServer((req, res) => {
+    const parsedUrl = url.parse(req.url, true);
+
+    if (parsedUrl.pathname === '/getDate/') {
+        new Server().handleRequest(req, res);
+    } else if (parsedUrl.pathname === '/writeFile/') {
+        new Writer().handleRequest(req, res);
+    } else if (parsedUrl.pathname.startsWith('/readFile/')) {
+        new Reader().handleRequest(req, res);
+    } else {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end(message.urlError);
+    }
+});
+
+server.listen(8000, () => {
+    console.log(message.serverRunning);
+});
