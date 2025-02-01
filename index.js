@@ -141,8 +141,8 @@ class Reader {
 }
 
 const server = new Server(8000);
-const writer = new Writer(8001);
-const reader = new Reader(8002);
+const writer = new Writer(8000);
+const reader = new Reader(8000);
 server.start();
 writer.start();
 reader.start();
